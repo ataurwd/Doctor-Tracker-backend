@@ -63,10 +63,27 @@ export const getSummary = async (req: Request, res: Response, next: NextFunction
  */
 export const getTrends = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { range } = req.query; // '30days' | '6months' | 'year'
+    const { range } = req.query; // '30days' | '60days' | 'all'
 
-    // Group patients by date (month or day)
-    const trends = await Patient.aggregate([
+    const matchStage: any = {};
+    const now = new Date();
+
+    if (range === '30days') {
+      const past30 = new Date();
+      past30.setDate(now.getDate() - 30);
+      matchStage.admissionDate = { $gte: past30 };
+    } else if (range === '60days') {
+      const past60 = new Date();
+      past60.setDate(now.getDate() - 60);
+      matchStage.admissionDate = { $gte: past60 };
+    }
+
+    const pipeline: any[] = [];
+    if (Object.keys(matchStage).length > 0) {
+      pipeline.push({ $match: matchStage });
+    }
+
+    pipeline.push(
       {
         $group: {
           _id: {
@@ -79,7 +96,7 @@ export const getTrends = async (req: Request, res: Response, next: NextFunction)
         },
       },
       { $sort: { '_id.year': 1, '_id.month': 1, '_id.day': 1 } },
-      { $limit: 30 },
+      { $limit: 60 },
       {
         $project: {
           _id: 0,
@@ -88,8 +105,10 @@ export const getTrends = async (req: Request, res: Response, next: NextFunction)
           },
           admissions: '$count',
         },
-      },
-    ]);
+      }
+    );
+
+    const trends = await Patient.aggregate(pipeline);
 
     res.status(200).json({
       success: true,
