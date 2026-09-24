@@ -18,14 +18,28 @@ export const seedDatabase = async () => {
       Patient.deleteMany({}),
     ]);
 
-    // 1. Create Default Admin
-    const admin = await User.create({
-      name: 'Administrator',
-      email: 'admin@doctortracker.com',
-      password: 'admin123',
-      role: 'admin',
-    });
-    console.log(`[Seeder] Admin created: ${admin.email} (Password: admin123)`);
+    // 1. Create Default Admin Users
+    const users = await User.create([
+      {
+        name: 'Sarah Connor',
+        email: 'admin@doctortracker.com',
+        password: 'admin123',
+        role: 'admin',
+      },
+      {
+        name: 'Dr. Arthur Bell',
+        email: 'director@doctortracker.com',
+        password: 'director123',
+        role: 'admin',
+      },
+      {
+        name: 'Elena Vasquez',
+        email: 'supervisor@doctortracker.com',
+        password: 'supervisor123',
+        role: 'admin',
+      },
+    ]);
+    console.log(`[Seeder] Created ${users.length} admin accounts for quick login testing`);
 
     // 2. Create Doctors
     const doctorsData = [
