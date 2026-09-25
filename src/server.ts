@@ -65,8 +65,9 @@ export const startServer = async () => {
       await seedDatabase();
     }
 
-    app.listen(PORT, () => {
-      console.log(`[Server] REST API listening on http://localhost:${PORT}`);
+    const portNumber = Number(PORT) || 5000;
+    app.listen(portNumber, '0.0.0.0', () => {
+      console.log(`[Server] REST API listening on port ${portNumber}`);
       initKeepAlive();
     });
   } catch (error) {
