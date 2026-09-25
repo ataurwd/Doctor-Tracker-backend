@@ -9,6 +9,7 @@ import patientRoutes from './routes/patientRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import { User } from './models/User.js';
 import { seedDatabase } from './scripts/seed.js';
+import { initKeepAlive } from './utils/keepAlive.js';
 
 dotenv.config();
 
@@ -66,6 +67,7 @@ export const startServer = async () => {
 
     app.listen(PORT, () => {
       console.log(`[Server] REST API listening on http://localhost:${PORT}`);
+      initKeepAlive();
     });
   } catch (error) {
     console.error('[Server] Startup error:', error);
